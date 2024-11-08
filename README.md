@@ -32,7 +32,7 @@ Bem-vindo ao repositório **UI**! Este é um projeto privado que contém funcion
 
 5. Inicie o front:
    ```bash
-   NaN
+   npm start
    ```
 
 > **Nota:** Este projeto é privado e todas as informações nele contidas são confidenciais.
