@@ -10,7 +10,7 @@ Bem-vindo ao repositório **UI**! Este é um projeto privado que contém funcion
 - **Edição de usuários**  
   Funcionalidade de editar informações de perfil.
 
-- **Gestão de Eventos**  
+- **Criação e visualização de Eventos**  
   Gerenciamento de eventos de forma intuitica e direcionada.
 
 ## ⚙️ Instalação
