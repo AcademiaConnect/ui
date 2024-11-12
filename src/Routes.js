@@ -6,6 +6,7 @@ import NavBar from "./components/NavBar/NavBar";
 import Error from "./containers/Error/Error";
 import CreateAccount from "./containers/Auth/CreateAccount";
 import Inicial from "./containers/Inicio";
+import Events from "./containers/Events/events";
 
 
 export const getRoutes = (dispatch, token) => {
@@ -23,6 +24,7 @@ export const getRoutes = (dispatch, token) => {
             {path: "create_account", element: <CreateAccount />},
             {path: "*", element: <Navigate to="/" />},
             {index: true, element: <Login />},
+            {path: "events", element: <Events />}
         ];
     }
 
