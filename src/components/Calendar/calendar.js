@@ -1,11 +1,28 @@
+// Calendar.js
 import React, { useState } from 'react';
+import CreateEventModal from '../EventModal/CreateEventModal';
 import logo from "../../assets/images/logo.png";
 
 const Calendar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false);
 
+  // Funções para controlar o modal de detalhes da atividade
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  // Funções para controlar o modal de criação de evento
+  const openCreateEventModal = () => setIsCreateEventModalOpen(true);
+  const closeCreateEventModal = () => setIsCreateEventModalOpen(false);
+
+  // Dados para a atividade do dia
+  const activity = {
+    date: "05/01/2021",
+    title: "Encontro Tech - 1ª Ed.",
+    time: "9:30 - 12:00",
+    location: "Edifício Sede - UDF",
+    description: "Uma palestra sobre tecnologias emergentes.",
+  };
 
   const month = 0; // Janeiro (0 = Janeiro)
   const year = 2021;
@@ -46,6 +63,7 @@ const Calendar = () => {
     );
   }
 
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Cabeçalho */}
@@ -62,7 +80,7 @@ const Calendar = () => {
       </header>
 
       {/* Conteúdo Principal */}
-      <main className="bg-gray-200 flex flex-1 p-8">
+      <main className="flex flex-1 p-8">
         <aside className="w-1/4">
           {/* Informações do Aluno */}
           <div className="bg-white p-4 rounded-lg shadow-md mb-4">
@@ -86,13 +104,18 @@ const Calendar = () => {
 
           {/* Atividades do Dia */}
           <div className="bg-white p-4 rounded-lg shadow-md mb-4">
-            <h3 className="font-bold mb-2">Atividades do dia de hoje (05/01/2021)</h3>
+            <h3 className="font-bold mb-2">Atividades do dia de hoje ({activity.date})</h3>
             <div className="bg-red-100 p-2 rounded-lg mb-2">
-              <p className="text-red-500 font-bold">9:30 - 12:00</p>
-              <button onClick={openModal} className="text-red-500">Encontro Tech - 1ª Ed.</button>
-              <p className="text-red-500">Edifício Sede - UDF</p>
+              <p className="text-red-500 font-bold">{activity.time}</p>
+              <button onClick={openModal} className="text-red-500">{activity.title}</button>
+              <p className="text-red-500">{activity.location}</p>
             </div>
-            <a href="#" className="text-blue-500">Ver todas</a>
+            <button
+              onClick={openCreateEventModal}
+              className="bg-gray-900 text-white px-4 py-2 rounded-lg mt-2 hover:bg-purple-600 transition"
+            >
+              Criar Evento
+            </button>
           </div>
 
           {/* Próximos Eventos */}
@@ -106,8 +129,8 @@ const Calendar = () => {
           </div>
         </aside>
 
-        {/* Calendário */}
-        <section className="flex-1 ml-8">
+         {/* Calendário */}
+         <section className="flex-1 ml-8">
           <h1 className="text-3xl font-bold mb-4">Janeiro/2021</h1>
           <table className="w-full bg-white rounded-lg shadow-md border-collapse mb-8">
             <thead>
@@ -126,25 +149,25 @@ const Calendar = () => {
         </section>
       </main>
 
-      {/* Modal */}
+      {/* Modal de Detalhes do Evento */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 max-w-lg relative">
             <button onClick={closeModal} className="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
               &times;
             </button>
-            <h2 className="text-2xl font-bold mb-4">Encontro Tech - 1ª Ed.</h2>
-            <p><strong>Data:</strong> 06/01/2024</p>
-            <p><strong>Horário:</strong> 9:30 - 12:00</p>
-            <p><strong>Localização:</strong> Edifício Sede - UDF</p>
+            <h2 className="text-2xl font-bold mb-4">{activity.title}</h2>
+            <p><strong>Data:</strong> {activity.date}</p>
+            <p><strong>Horário:</strong> {activity.time}</p>
+            <p><strong>Localização:</strong> {activity.location}</p>
             <h3 className="mt-4 font-bold">Descrição:</h3>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-            </p>
+            <p>{activity.description}</p>
           </div>
         </div>
       )}
+
+      {/* Modal para Criar Evento */}
+      <CreateEventModal isOpen={isCreateEventModalOpen} onClose={closeCreateEventModal} />
 
       {/* Rodapé */}
       <footer className="bg-white p-4 text-center">
