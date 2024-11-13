@@ -1,4 +1,3 @@
-// Calendar.js
 import React, { useState } from 'react';
 import CreateEventModal from '../EventModal/CreateEventModal';
 import logo from "../../assets/images/logo.png";

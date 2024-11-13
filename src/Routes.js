@@ -16,7 +16,9 @@ export const getRoutes = (dispatch, token) => {
         // Usuário autenticado
         routes = [
             {path: "inicio", element: <Inicial />, loader: () => checkAuthLoader(dispatch)},
-            {path: "*", element: <Navigate to="/inicio" />}
+            {path: "*", element: <Navigate to="/inicio" />},
+            {path: "events", element: <Events />, loader: () => checkAuthLoader(dispatch) }
+
         ];
     } else {
         // Usuário não autenticado
@@ -24,7 +26,7 @@ export const getRoutes = (dispatch, token) => {
             {path: "create_account", element: <CreateAccount />},
             {path: "*", element: <Navigate to="/" />},
             {index: true, element: <Login />},
-            {path: "events", element: <Events />}
+           
         ];
     }
 

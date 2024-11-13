@@ -1,4 +1,3 @@
-// CreateEventModal.js
 import React, { useState } from 'react';
 import AIGenerateModal from '../AIGenarateModal/AIGenarateModal';
 

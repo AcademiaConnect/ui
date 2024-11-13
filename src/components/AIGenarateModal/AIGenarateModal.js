@@ -1,4 +1,3 @@
-// AIGenerateModal.js
 import React, { useState } from 'react';
 
 const AIGenerateModal = ({ isOpen, onClose, onGenerate }) => {
