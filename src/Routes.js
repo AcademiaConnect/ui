@@ -17,7 +17,7 @@ export const getRoutes = (dispatch, token) => {
         routes = [
             {path: "inicio", element: <Inicial />, loader: () => checkAuthLoader(dispatch)},
             {path: "*", element: <Navigate to="/inicio" />},
-            {path: "events", element: <Events />, loader: () => checkAuthLoader(dispatch) }
+            //{path: "events", element: <Events />, loader: () => checkAuthLoader(dispatch) }
 
         ];
     } else {
@@ -26,6 +26,7 @@ export const getRoutes = (dispatch, token) => {
             {path: "create_account", element: <CreateAccount />},
             {path: "*", element: <Navigate to="/" />},
             {index: true, element: <Login />},
+            {path: "events", element: <Events />}
            
         ];
     }

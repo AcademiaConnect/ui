@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react';  
 import CreateEventModal from '../EventModal/CreateEventModal';
 import logo from "../../assets/images/logo.png";
 
@@ -6,12 +6,18 @@ const Calendar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false);
 
+  const [month, setMonth] = useState(0);  // Janeiro (0 = Janeiro)
+  const [year, setYear] = useState(2021);
+
   // Funções para controlar o modal de detalhes da atividade
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   // Funções para controlar o modal de criação de evento
-  const openCreateEventModal = () => setIsCreateEventModalOpen(true);
+  const openCreateEventModal = () => {
+    closeModal(); // Fechar o modal de detalhes antes de abrir o modal de criação de evento
+    setIsCreateEventModalOpen(true);
+  };
   const closeCreateEventModal = () => setIsCreateEventModalOpen(false);
 
   // Dados para a atividade do dia
@@ -23,8 +29,7 @@ const Calendar = () => {
     description: "Uma palestra sobre tecnologias emergentes.",
   };
 
-  const month = 0; // Janeiro (0 = Janeiro)
-  const year = 2021;
+  // Calcular o primeiro dia do mês e o número de dias no mês
   const firstDayOfMonth = new Date(year, month, 1).getDay(); // Dia da semana do primeiro dia do mês
   const daysInMonth = new Date(year, month + 1, 0).getDate(); // Número de dias no mês
 
@@ -62,19 +67,43 @@ const Calendar = () => {
     );
   }
 
+  // Função para avançar para o próximo mês
+  const goToNextMonth = () => {
+    if (month === 11) {
+      setMonth(0);
+      setYear(year + 1);
+    } else {
+      setMonth(month + 1);
+    }
+  };
+
+  // Função para voltar para o mês anterior
+  const goToPreviousMonth = () => {
+    if (month === 0) {
+      setMonth(11);
+      setYear(year - 1);
+    } else {
+      setMonth(month - 1);
+    }
+  };
+
+  // Nome dos meses
+  const monthNames = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Cabeçalho */}
       <header className="bg-purple-500 p-4 flex justify-between items-center">
         <div className="w-7 h-10 rounded-full flex items-center justify-center">
-          <img src={logo}/>
+          <img src={logo} alt="Logo" />
         </div>
         <div className="w-10 h-10 rounded-full flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="size-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-        </svg>
-
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="white" className="size-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+          </svg>
         </div>
       </header>
 
@@ -109,12 +138,6 @@ const Calendar = () => {
               <button onClick={openModal} className="text-red-500">{activity.title}</button>
               <p className="text-red-500">{activity.location}</p>
             </div>
-            <button
-              onClick={openCreateEventModal}
-              className="bg-gray-900 text-white px-4 py-2 rounded-lg mt-2 hover:bg-purple-600 transition"
-            >
-              Criar Evento
-            </button>
           </div>
 
           {/* Próximos Eventos */}
@@ -128,9 +151,22 @@ const Calendar = () => {
           </div>
         </aside>
 
-         {/* Calendário */}
-         <section className="flex-1 ml-8">
-          <h1 className="text-3xl font-bold mb-4">Janeiro/2021</h1>
+        {/* Calendário */}
+        <section className="flex-1 ml-8">
+          <div className="flex justify-between items-center mb-4">
+            <button onClick={goToPreviousMonth} className="p-2 bg-gray-200 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="gray" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <h1 className="text-3xl font-bold">{`${monthNames[month]}/${year}`}</h1>
+            <button onClick={goToNextMonth} className="p-2 bg-gray-200 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="gray" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+          
           <table className="w-full bg-white rounded-lg shadow-md border-collapse mb-8">
             <thead>
               <tr>
@@ -151,16 +187,39 @@ const Calendar = () => {
       {/* Modal de Detalhes do Evento */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 max-w-lg relative">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-3/5 h-2/3 max-w-4xl relative flex flex-col"> {/* Modal maior e flex-col para alinhar o conteúdo */}
             <button onClick={closeModal} className="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
               &times;
             </button>
-            <h2 className="text-2xl font-bold mb-4">{activity.title}</h2>
-            <p><strong>Data:</strong> {activity.date}</p>
-            <p><strong>Horário:</strong> {activity.time}</p>
-            <p><strong>Localização:</strong> {activity.location}</p>
-            <h3 className="mt-4 font-bold">Descrição:</h3>
-            <p>{activity.description}</p>
+            <h2 className="text-2xl font-bold mb-4">Atividade do dia ({activity.date})</h2>
+            
+            <div className="flex space-x-4 flex-1"> {/* Flex container para alinhar o card à esquerda */}
+              <div className="bg-red-100 p-4 rounded-lg h-2/4 w-1/3 max-w-xs"> {/* Card de evento com largura fixa menor */}
+                <p className="text-red-600 font-bold text-lg">{activity.title}</p>
+                <p className="text-gray-700 mt-2"><strong>Horário:</strong> {activity.time}</p>
+                <p className="text-gray-700 mt-1 flex items-center">
+                  {/* Ícone de localização antes do texto */}
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a1 1 0 0 1-.707-.293l-5-5a7 7 0 1 1 9.414 0l-5 5A1 1 0 0 1 10 18zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" clipRule="evenodd" />
+                  </svg>
+                  {activity.location}
+                </p>
+              </div>
+
+              <div className="flex-1"> {/* Área branca expandida */} 
+                {/* Conteúdo extra pode ser adicionado aqui */}
+              </div>
+            </div>
+
+            {/* Botão Criar Evento no canto inferior direito */}
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={openCreateEventModal}
+                className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition"
+              >
+                Criar evento
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -177,3 +236,4 @@ const Calendar = () => {
 };
 
 export default Calendar;
+
