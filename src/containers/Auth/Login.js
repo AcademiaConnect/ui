@@ -3,12 +3,11 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import {Link as LinkRouter} from "react-router-dom";
 import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
 import {useDispatch} from "react-redux";
 import api from "../../axios";
 import {loginUser} from "../../actions/AuthActions";
 import InputPassword from "../../components/Input/InputPassword";
-import { GRAY_LABEL_UX, RED_ERROR_UX, SECONDARY, styleYellowButton, GRAY_BORDER_TABLE, LINE_TABLE, GRAY_BG_BODY } from "../../shared/utils";
+import { GRAY_LABEL_UX, RED_ERROR_UX, styleYellowButton } from "../../shared/utils";
 import "./Login.css";
 import { showSnackMessage } from "../../actions/SnackActions";
 import loginImage from '../../assets/images/login.png';
@@ -18,7 +17,6 @@ import logo from "../../assets/images/logo.png";
 const Login = () => {
 
     const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false);
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [passwordError, setPasswordError] = useState(false);
@@ -29,14 +27,11 @@ const Login = () => {
             username: name,
             password,
         };
-        setLoading(true);
         api.GetLogin(data).then(response => {
             let token = response.data.access;
-            setLoading(false);
             dispatch(loginUser(token));
             window.location.reload();
         }).catch(error => {
-            setLoading(false);
             if (error.response.status === 401 || error.response.status === 422) {
                 setPasswordError(true);
                 dispatch(showSnackMessage({message: "O nome ou a senha informados estão incorretos!", severity: "error"}));
@@ -71,6 +66,7 @@ const Login = () => {
                     }}
                 />
                 <InputPassword label="Senha" password={password} error={passwordError} handleChange={(e) => setPassword(e.target.value)} />
+                
                 {
                     passwordError && (
                         <p style={{color: RED_ERROR_UX, fontSize: "14px"}}>O email ou senha informados estão incorretos!</p>

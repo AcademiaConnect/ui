@@ -26,7 +26,6 @@ export const getRoutes = (dispatch, token) => {
             {path: "create_account", element: <CreateAccount />},
             {path: "*", element: <Navigate to="/" />},
             {index: true, element: <Login />},
-           
         ];
     }
 
