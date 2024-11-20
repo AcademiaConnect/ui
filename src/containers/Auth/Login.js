@@ -12,7 +12,7 @@ import "./Login.css";
 import { showSnackMessage } from "../../actions/SnackActions";
 import loginImage from '../../assets/images/login.png';
 import logo from "../../assets/images/logo.png";
-
+import CryptoJS from 'crypto-js';
 
 const Login = () => {
 
@@ -21,11 +21,24 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [passwordError, setPasswordError] = useState(false);
 
+    //Verificar se as variáveis de ambiente estão definidas
+    const keyString = process.env.REACT_APP_KEY_CRYPTOGRAPHY;
+    const ivString = process.env.REACT_APP_IV_CRYPTOGRAPHY;
+
+    const key = CryptoJS.enc.Utf8.parse(keyString);
+    const iv = CryptoJS.enc.Utf8.parse(ivString);
+
+    // Criptografar a senha
+    const encryptedPassword = CryptoJS.AES.encrypt(password, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+    }).toString();
 
     const handleSubmit = () => {
         const data = {
             username: name,
-            password,
+            password: encryptedPassword,
         };
         api.GetLogin(data).then(response => {
             let token = response.data.access;
