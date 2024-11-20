@@ -58,7 +58,6 @@ const offset = (firstDayOfMonth + 6) % 7; // Ajusta para começar na segunda-fei
     calendarCells.push(<td key={`empty-${i}`} className="p-4"></td>);
   }
 
-
   for (let day = 1; day <= daysInMonth; day++) {
     const isEventDay = (month === activityMonth && day === activityDay); // Correção aqui
     
