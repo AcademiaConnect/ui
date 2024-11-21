@@ -1,0 +1,102 @@
+.calendar-container {
+    max-width: 100%; /* Largura máxima */
+    height: 600px; /* Altura do calendário */
+    margin: 0 auto; /* Centraliza o calendário */
+    overflow: hidden; /* Evita que conteúdo extra ultrapasse */
+    position: relative;
+    z-index: 1; /* Define um contexto de empilhamento */
+  }
+  
+  .calendar-container .fc {
+    width: 100%; /* Ajusta o calendário à largura do contêiner */
+    height: 100%; /* Ajusta o calendário à altura do contêiner */
+  }
+
+  .fc {
+    z-index: 1; /* Reduza o z-index do calendário */
+  }
+
+/* Estilizando o título do calendário */
+.fc-toolbar-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    background-color: #f1f1f1;
+  }
+  
+  /* Botões de navegação */
+  .fc .fc-button {
+    background-color: transparent;
+    border: none;
+    color: #333;
+    font-size: 1rem;
+    margin: 0 5px;
+  }
+  
+  .fc .fc-button:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Header do calendário */
+  .fc-toolbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  /* Dias da semana */
+  .fc-col-header-cell {
+    color: #333;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  /* Dias do mês */
+  .fc-daygrid-day {
+    height: 100px;
+    vertical-align: top;
+    border: 1px solid #ddd;
+    background-color: #fdfdfd;
+    text-align: left;
+    padding: 5px;
+  }
+  
+  .fc-day-today {
+    background-color: #fef2f2; /* Destaque para o dia atual */
+  }
+  
+  /* Eventos */
+  .fc-daygrid-event {
+    background-color: #f8d7da; /* Cor do evento */
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 3px;
+    padding: 2px 5px;
+    margin-bottom: 3px;
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+  
+  /* Estilizando o "Mais eventos" */
+  .fc-daygrid-more-link {
+    color: #007bff;
+    font-size: 0.9rem;
+    text-decoration: underline;
+  }
+  
+  /* Celular vazia */
+  .fc-daygrid-day.fc-day-disabled {
+    background-color: #f9f9f9;
+  }
+  
+  /* Hover em dia */
+  .fc-daygrid-day:hover {
+    background-color: #f7f7f7;
+  }
+  
+  .modal-z-index {
+    z-index: 10 !important;
+  }
