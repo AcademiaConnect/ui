@@ -13,6 +13,12 @@ RUN npm install
 # Copiar todos os arquivos do projeto para o diretório de trabalho
 COPY . .
 
+# Adicionar suporte para variáveis de ambiente no build
+ARG REACT_APP_API_URL
+ARG REACT_APP_ENV
+ENV REACT_APP_API_URL=${REACT_APP_API_URL}
+ENV REACT_APP_ENV=${REACT_APP_ENV}
+
 # Construir a aplicação React
 RUN npm run build
 
