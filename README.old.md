@@ -56,5 +56,13 @@ Bem-vindo ao repositório **UI**! Este é um projeto privado que contém funcion
    Abra (http://159.65.248.88/) para visualizar a aplicação.  
 
 ---
+## 📌 Observações Finais  
+
+- Este repositório está em constante evolução. Novas funcionalidades podem ser adicionadas a qualquer momento.  
+- Feedbacks e sugestões são sempre bem-vindos para melhorar a qualidade do projeto.  
+- Certifique-se de atualizar regularmente as dependências para garantir compatibilidade e segurança.  
+- Em caso de dúvidas ou problemas, entre em contato com a equipe responsável.  
+
+---
 
 
