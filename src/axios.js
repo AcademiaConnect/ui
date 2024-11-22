@@ -77,7 +77,7 @@ export const listEvents = async () => {
 // Função para atualizar um evento
 export const updateEvent = async (eventId, eventData) => {
     try {
-        const response = await instance.put(`events/create/${eventId}/`, eventData);
+        const response = await instance.put(`events/update/${eventId}/`, eventData);
         return response.data; // Retorna os dados atualizados do evento
     } catch (error) {
         console.error('Erro ao atualizar evento:', error.response?.data || error.message);
@@ -88,7 +88,7 @@ export const updateEvent = async (eventId, eventData) => {
 // Função para deletar um evento
 export const deleteEvent = async (eventId) => {
     try {
-        await instance.delete(`events/create/${eventId}/`);
+        await instance.delete(`events/delete/${eventId}/`);
         return { success: true };
     } catch (error) {
         console.error('Erro ao deletar evento:', error.response?.data || error.message);

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';  
 import CreateEventModal from '../EventModal/CreateEventModal';
+import EditEventModal from '../EventModal/EditEventModal'
 import logo from "../../assets/images/logo.png";
-import { listEvents } from '../../axios';
+import { listEvents, deleteEvent } from '../../axios';
 import './calendar.css'
 
 import FullCalendar from '@fullcalendar/react';
@@ -14,9 +15,10 @@ const Calendar = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false);
   const [isEventDetailModalOpen, setIsEventDetailModalOpen] = useState(false); // Controle do modal específico do evento
-
   const [month, setMonth] = useState(0);  // Janeiro (0 = Janeiro)
   const [year, setYear] = useState(2021);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [eventToEdit, setEventToEdit] = useState(null);
 
   // Funções para controlar o modal de detalhes da atividade
   const openModal = () => setIsModalOpen(true);
@@ -131,6 +133,27 @@ const goToPreviousMonth = () => {
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
   ];
 
+  const handleDeleteEvent = async (eventId) => {
+    const confirmDelete = window.confirm("Tem certeza de que deseja excluir este evento?");
+    
+    if (!confirmDelete) {
+      return; // Se o usuário cancelar, interrompa a execução
+    }
+  
+    try {
+      // Chama a API para deletar o evento
+      const response = await deleteEvent(eventId);
+      if (response.success) {
+        // Atualiza a lista de eventos removendo o evento deletado
+        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
+        alert("Evento excluído com sucesso!");
+      }
+    } catch (error) {
+      console.error("Erro ao deletar o evento:", error);
+      alert("Não foi possível excluir o evento.");
+    }
+  };
+
   /*Listando os eventos*/
   const [events, setEvents] = useState([]);
   const [eventsCalendar, setEventsCalendar] = useState([])
@@ -178,6 +201,16 @@ const goToPreviousMonth = () => {
     openCreateEventModal();
   };
 
+  const openEditModal = (event) => {
+    setEventToEdit(event); // Define o evento a ser editado
+    setIsEditModalOpen(true); // Abre a modal
+  };
+
+  const closeEditModal = () => {
+    setEventToEdit(null); // Reseta o evento selecionado
+    setIsEditModalOpen(false); // Fecha a modal
+  };
+  
 
   return (
     <div className="min-h-screen flex flex-col caret-transparent">
@@ -214,10 +247,11 @@ const goToPreviousMonth = () => {
           </div>
 
           {/* Atividades do Dia */}
-          <div className="bg-white p-4 rounded-lg shadow-md mb-4 flex flex-col">
+          <div className="bg-white h-72 p-4 rounded-lg shadow-md mb-4 flex flex-col">
             <h3 className="font-bold mb-2">Atividades do dia de hoje ({getCurrentDate()})</h3>
-              {/*Listagem de eventos*/}
-              {events.filter((event) => {
+              <div className='overflow-y-auto'>
+                {/*Listagem de eventos*/}
+                {events.filter((event) => {
                 // Obter a data atual no formato 'YYYY-MM-DD'
                 const today = new Date().toISOString().split('T')[0];
 
@@ -236,6 +270,7 @@ const goToPreviousMonth = () => {
                     <p className="text-red-500">{event.location}</p>
                   </div>
               ))}
+              </div>
               <p onClick={openModal} className='self-end cursor-pointer underline'>ver todos os eventos</p>
           </div>
 
@@ -281,8 +316,7 @@ const goToPreviousMonth = () => {
             locale="pt-br" // Configurar idioma
             editable={true} // Permite mover eventos
             eventContent={(arg) => (
-              <div>
-                <b>{arg.timeText}</b>
+              <div className='truncate'>
                 <i>{arg.event.title}</i>
               </div>
             )}
@@ -315,45 +349,52 @@ const goToPreviousMonth = () => {
             {/* Listagem de eventos */}
             <div className="flex flex-col space-y-4 overflow-y-auto h-96">
               {events.length > 0 ? (
-                events.filter((event) => {
-                  // Obter a data atual no formato 'YYYY-MM-DD'
-                  const today = new Date().toISOString().split('T')[0];
-  
-                  // Filtrar os eventos pela data atual
-                  const eventDate = event.dateInitial.split('T')[0]; // Ajuste baseado no formato de dateInitial
-                  return eventDate === today;
-                  })
-                  .map((event) => (
+                events.map((event) => (
                   <div
                     key={event.id} // Identificador único para cada evento
-                    className="bg-red-100 p-4 rounded-lg cursor-pointer hover:bg-red-200 transition"
-                    onClick={() => openEventDetailModal(event)} // Passa o evento para abrir os detalhes
+                    className="bg-red-100 p-4 rounded-lg cursor-pointer hover:bg-red-200 transition flex justify-between items-center"
                   >
-                    <p className="text-red-600 font-bold text-lg">{event.title}</p>
-                    <p className="text-gray-700 mt-2">
-                      <strong>Data:</strong>{' '}
-                      {new Date(event.dateInitial).toLocaleDateString()} -{' '}
-                      {new Date(event.dateFinal).toLocaleDateString()}
-                    </p>
-                    <p className="text-gray-700 mt-2">
-                      <strong>Horário:</strong>{' '}
-                      {`${new Date(event.dateInitial).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(event.dateFinal).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
-                    </p>
-                    <p className="text-gray-700 mt-2 flex items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-red-500 mr-1"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                    <div onClick={() => openEventDetailModal(event)}>
+                      <p className="text-red-600 font-bold text-lg">{event.title}</p>
+                      <p className="text-gray-700 mt-2">
+                        <strong>Data:</strong>{' '}
+                        {new Date(event.dateInitial).toLocaleDateString()} -{' '}
+                        {new Date(event.dateFinal).toLocaleDateString()}
+                      </p>
+                      <p className="text-gray-700 mt-2">
+                        <strong>Horário:</strong>{' '}
+                        {`${new Date(event.dateInitial).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(event.dateFinal).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                      </p>
+                      <p className="text-gray-700 mt-2 flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 text-red-500 mr-1"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a1 1 0 0 1-.707-.293l-5-5a7 7 0 1 1 9.414 0l-5 5A1 1 0 0 1 10 18zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        {event.location || 'Local não informado'}
+                      </p>
+                    </div>
+                    <div>
+                      <button
+                        className="z-index:6 p-3 rounded-md black mr-2 hover:underline"
+                        onClick={() => openEditModal(event)}
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a1 1 0 0 1-.707-.293l-5-5a7 7 0 1 1 9.414 0l-5 5A1 1 0 0 1 10 18zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      {event.location || 'Local não informado'}
-                    </p>
+                        Editar
+                      </button>
+                      <button
+                        className='z-index:6 bg-red-500 p-3 rounded-md text-white hover:bg-red-400'
+                        onClick={() => handleDeleteEvent(event.id)}
+                      > 
+                        Apagar
+                      </button>
+                    </div>
                   </div>
                 ))
               ) : (
@@ -409,9 +450,15 @@ const goToPreviousMonth = () => {
       {/* Modal para Criar Evento */}
       <CreateEventModal isOpen={isCreateEventModalOpen} onClose={closeCreateEventModal} />
 
+      <EditEventModal
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        eventToEdit={eventToEdit}
+      />
+
       {/* Rodapé */}
-      <footer className="bg-white p-4 text-center">
-        Feito por alunos da UDF
+      <footer className="p-4 text-center">
+        AcademiaConnect© Feito por alunos da UDF
       </footer>
     </div>
   );
