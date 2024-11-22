@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AIGenerateModal from '../AIGenarateModal/AIGenarateModal';
+import { createEvent, autoCompleteEvent } from '../../axios'; // Importe as funções da API
 
 const CreateEventModal = ({ isOpen, onClose }) => {
   const [title, setTitle] = useState('');
@@ -10,29 +11,53 @@ const CreateEventModal = ({ isOpen, onClose }) => {
   const [endTime, setEndTime] = useState('');
   const [location, setLocation] = useState('');
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSave = () => {
-    // Lógica para salvar o evento
-    console.log({
+  // Função para salvar o evento
+  const handleSave = async () => {
+    const eventData = {
       title,
       description,
-      startDate,
-      startTime,
-      endDate,
-      endTime,
-      location
-    });
-    onClose();
+      dateInitial: `${startDate}T${startTime}:00Z`, // Formata para o formato esperado pela API
+      dateFinal: `${endDate}T${endTime}:00Z`,
+      location,
+    };
+
+    try {
+      const createdEvent = await createEvent(eventData); // Chama a API para criar o evento
+      console.log('Evento criado com sucesso:', createdEvent);
+      onClose(); // Fecha o modal após a criação bem-sucedida
+    } catch (error) {
+      console.error('Erro ao criar o evento:', error);
+      alert('Falha ao criar o evento. Verifique os dados e tente novamente.');
+    }
   };
 
-  const handleGenerateAI = (generatedDescription) => {
-    setDescription(generatedDescription);
+  // Função para gerar detalhes com IA e preencher o formulário
+  const handleGenerateAI = async (inputText) => {
+    setLoading(true);
+    try {
+      const generatedData = await autoCompleteEvent(inputText); // Chama a API para auto-completar
+      setTitle(generatedData.title || ''); // Preenche o título gerado
+      setDescription(generatedData.description || ''); // Preenche a descrição gerada
+      setStartDate(generatedData.dateInitial?.split('T')[0] || ''); // Preenche a data inicial gerada
+      setStartTime(generatedData.dateInitial?.split('T')[1]?.slice(0, 5) || ''); // Preenche o horário inicial gerado
+      setEndDate(generatedData.dateFinal?.split('T')[0] || ''); // Preenche a data final gerada
+      setEndTime(generatedData.dateFinal?.split('T')[1]?.slice(0, 5) || ''); // Preenche o horário final gerado
+      setLocation(generatedData.location || ''); // Preenche a localização gerada
+      setIsAIModalOpen(false); // Fecha a modal de geração
+    } catch (error) {
+      console.error('Erro ao gerar detalhes do evento:', error);
+      alert('Erro ao gerar detalhes do evento. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center caret-current modal-z-index">
       <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 max-w-3xl relative">
         <button onClick={onClose} className="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
           &times;
@@ -123,7 +148,7 @@ const CreateEventModal = ({ isOpen, onClose }) => {
               onClick={() => setIsAIModalOpen(true)}
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
             >
-              AI Generate
+              {loading ? 'Gerando...' : 'AI Generate'}
             </button>
             <button
               type="button"

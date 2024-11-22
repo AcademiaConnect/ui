@@ -1,9 +1,17 @@
-import React, { useState } from 'react';  
+import React, { useState, useEffect } from 'react';  
 import CreateEventModal from '../EventModal/CreateEventModal';
 import logo from "../../assets/images/logo.png";
+import { listEvents } from '../../axios';
+import './calendar.css'
+
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+
 
 const Calendar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false);
   const [isEventDetailModalOpen, setIsEventDetailModalOpen] = useState(false); // Controle do modal específico do evento
 
@@ -22,9 +30,15 @@ const Calendar = () => {
   const closeCreateEventModal = () => setIsCreateEventModalOpen(false);
 
    // Funções para controlar o modal de detalhes do evento específico
-   const openEventDetailModal = () => setIsEventDetailModalOpen(true);
-   const closeEventDetailModal = () => setIsEventDetailModalOpen(false);
+   const openEventDetailModal = (event) => {
+    setSelectedEvent(event); // Define o evento selecionado
+    setIsEventDetailModalOpen(true); // Abre a modal
+  };
 
+  const closeEventDetailModal = () => {
+    setSelectedEvent(null); // Limpa o evento selecionado
+    setIsEventDetailModalOpen(false); // Fecha a modal
+  };
 
   // Dados para a atividade do dia
   const activity = {
@@ -38,8 +52,8 @@ const Calendar = () => {
 
   // A data de atividade será convertida corretamente
   const activityDate = new Date(
-  `${activity.date.split("/")[2]}-${activity.date.split("/")[1]}-${activity.date.split("/")[0]}`
-);
+    `${activity.date.split("/")[2]}-${activity.date.split("/")[1]}-${activity.date.split("/")[0]}`
+  );
 
   const activityMonth = activityDate.getMonth(); // Mês do evento (0 - Janeiro, 1 - Fevereiro, etc.)
   const activityDay = 5;   // Dia do evento (5)
@@ -77,9 +91,6 @@ const offset = (firstDayOfMonth + 6) % 7; // Ajusta para começar na segunda-fei
     );
   }
   
-
-
-
   // Dividindo as células em linhas de 7 dias
   const rows = [];
   for (let i = 0; i < calendarCells.length; i += 7) {
@@ -89,7 +100,6 @@ const offset = (firstDayOfMonth + 6) % 7; // Ajusta para começar na segunda-fei
       </tr>
     );
   }
-
 
    // Função para avançar para o próximo mês
 const goToNextMonth = () => {
@@ -121,9 +131,56 @@ const goToPreviousMonth = () => {
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
   ];
 
+  /*Listando os eventos*/
+  const [events, setEvents] = useState([]);
+  const [eventsCalendar, setEventsCalendar] = useState([])
+
+  useEffect(() => {
+      const fetchEvents = async () => {
+          try {
+              const data = await listEvents();
+
+              const formattedEvents = data.map((event) => ({
+                id: event.id,
+                title: event.title,
+                start: event.dateInitial,
+                end: event.dateFinal,
+                extendedProps: {
+                  location: event.location,
+                  description: event.description,
+                },
+              }));
+              
+              setEventsCalendar(formattedEvents);
+              setEvents(data);
+          } catch (error) {
+              console.error('Erro ao buscar eventos:', error.message);
+          }
+      };
+
+      fetchEvents();
+  }, []);
+
+  function getCurrentDate() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0'); // Garante 2 dígitos para o dia
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Janeiro é 0
+    const year = today.getFullYear();
+    return `${day}/${month}/${year}`; // Retorna no formato dd/mm/yyyy
+  }
+
+  const handleEventClick = (clickInfo) => {
+    openEventDetailModal(clickInfo.event.extendedProps);
+  };
+
+  // Handler para clique em data
+  const handleDateClick = (info) => {
+    openCreateEventModal();
+  };
+
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col caret-transparent">
       {/* Cabeçalho */}
       <header className="bg-purple-500 p-4 flex justify-between items-center">
         <div className="w-7 h-10 rounded-full flex items-center justify-center">
@@ -160,82 +217,153 @@ const goToPreviousMonth = () => {
           </div>
 
           {/* Atividades do Dia */}
-          <div className="bg-white p-4 rounded-lg shadow-md mb-4">
-            <h3 className="font-bold mb-2">Atividades do dia de hoje ({activity.date})</h3>
-            <div className="bg-red-100 p-2 rounded-lg mb-2">
-              <p className="text-red-500 font-bold">{activity.time}</p>
-              <button onClick={openModal} className="text-red-500">{activity.title}</button>
-              <p className="text-red-500">{activity.location}</p>
-            </div>
+          <div className="bg-white p-4 rounded-lg shadow-md mb-4 flex flex-col">
+            <h3 className="font-bold mb-2">Atividades do dia de hoje ({getCurrentDate()})</h3>
+              {/*Listagem de eventos*/}
+              {events.filter((event) => {
+                // Obter a data atual no formato 'YYYY-MM-DD'
+                const today = new Date().toISOString().split('T')[0];
+
+                // Filtrar os eventos pela data atual
+                const eventDate = event.dateInitial.split('T')[0]; // Ajuste baseado no formato de dateInitial
+                return eventDate === today;
+                })
+                .map((event) => (
+                  <div
+                    key={event.id} // Certifique-se de que cada evento tenha um ID único
+                    className="bg-red-100 p-2 rounded-lg mb-2 cursor-pointer"
+                    onClick={() => openEventDetailModal(event)} // Define o evento ao clicar
+                  >
+                    <p className="text-red-500 font-bold">{event.title}</p>
+                    <p className="text-red-500 font-bold">{`${new Date(event.dateInitial).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(event.dateFinal).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</p>
+                    <p className="text-red-500">{event.location}</p>
+                  </div>
+              ))}
+              <p onClick={openModal} className='self-end cursor-pointer underline'>ver todos os eventos</p>
           </div>
 
           {/* Próximos Eventos */}
           <div className="bg-white p-4 rounded-lg shadow-md">
-            <h3 className="font-bold mb-2">Próximos eventos: 10/01, 11/01, 13/01</h3>
+            <h3 className="font-bold mb-2">Próximos eventos ou eventos posteriores</h3>
             <ul>
-              <li className="bg-gray-200 p-2 rounded-lg mb-2">Encontro Tech - 1ª Ed.</li>
-              <li className="bg-gray-200 p-2 rounded-lg mb-2">Encontro Tech - 2ª Ed.</li>
-              <li className="bg-gray-200 p-2 rounded-lg">Encontro Tech - 3ª Ed.</li>
+              {events.filter((event) => {
+                // Obter a data atual no formato 'YYYY-MM-DD'
+                const today = new Date().toISOString().split('T')[0];
+
+                // Filtrar os eventos pela data atual
+                const eventDate = event.dateInitial.split('T')[0]; // Ajuste baseado no formato de dateInitial
+                return eventDate !== today;
+                })
+                .map((event) => (
+                  <li 
+                    onClick={() => openEventDetailModal(event)}
+                    key={event.id} className="bg-gray-200 p-2 rounded-lg mb-2 cursor-pointer flex justify-between"
+                  >
+                    {event.title}
+                  </li>
+              ))}
             </ul>
           </div>
         </aside>
 
-       {/* Calendário */}
+      {/* Calendário */}
       <section className="flex-1 ml-8">
-        <div className="flex justify-between items-center mb-4">
-          <button onClick={goToPreviousMonth} className="p-2 bg-gray-200 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="gray" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <h1 className="text-3xl font-bold">{`${monthNames[month]}/${year}`}</h1>
-          <button onClick={goToNextMonth} className="p-2 bg-gray-200 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="gray" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+        <div className="calendar-container">
+          <FullCalendar
+            plugins={[dayGridPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            events={eventsCalendar}
+            eventClick={handleEventClick} // Clique em evento para abrir detalhes
+            contentHeight={700} // Altura máxima
+            aspectRatio={1.2} // Reduz a largura proporcionalmente    
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,dayGridWeek',
+            }}
+            locale="pt-br" // Configurar idioma
+            editable={true} // Permite mover eventos
+            eventContent={(arg) => (
+              <div>
+                <b>{arg.timeText}</b>
+                <i>{arg.event.title}</i>
+              </div>
+            )}
+            dayCellClassNames={(date) => {
+              const today = new Date().toISOString().split('T')[0];
+              if (date.dateStr === today) {
+                return 'bg-warning'; // Cor de fundo para o dia atual
+              }
+              return '';
+            }}
+          />
         </div>
-        
-        <table className="w-full bg-white rounded-lg shadow-md border-collapse mb-8">
-          <thead>
-            <tr>
-              {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
-                <th key={day} className="p-4 font-semibold text-gray-700 border-b border-gray-300">
-                  {day}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows}
-          </tbody>
-        </table>
       </section>
       </main>
 
       {/* Modal de Detalhes do Evento */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-3/5 h-1/4 max-w-4xl relative flex flex-col">
-            <button onClick={closeModal} className="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
-              &times;
-            </button>
-            <h2 className="text-2xl font-bold mb-4">Atividade do dia ({activity.date})</h2>
-            <div className="flex space-x-4 flex-1">
-              <div
-                className="bg-red-100 p-4 rounded-lg h-3/5 w-2/4 max-w-xs cursor-pointer"
-                onClick={openEventDetailModal}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center modal-z-index">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-3/5 max-w-4xl flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Atividades do dia</h2>
+              <button
+                onClick={closeModal}
+                className="text-gray-500 hover:text-gray-800 text-2xl"
               >
-                <p className="text-red-600 font-bold text-lg">{activity.title}</p>
-                <p className="text-gray-700 mt-2"><strong>Horário:</strong> {activity.time}</p>
-                <p className="text-gray-700 mt-1 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a1 1 0 0 1-.707-.293l-5-5a7 7 0 1 1 9.414 0l-5 5A1 1 0 0 1 10 18zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" clipRule="evenodd" />
-                  </svg>
-                  {activity.location}
-                </p>
-              </div>
+                &times;
+              </button>
             </div>
+
+            {/* Listagem de eventos */}
+            <div className="flex flex-col space-y-4 overflow-y-auto h-96">
+              {events.length > 0 ? (
+                events.filter((event) => {
+                  // Obter a data atual no formato 'YYYY-MM-DD'
+                  const today = new Date().toISOString().split('T')[0];
+  
+                  // Filtrar os eventos pela data atual
+                  const eventDate = event.dateInitial.split('T')[0]; // Ajuste baseado no formato de dateInitial
+                  return eventDate === today;
+                  })
+                  .map((event) => (
+                  <div
+                    key={event.id} // Identificador único para cada evento
+                    className="bg-red-100 p-4 rounded-lg cursor-pointer hover:bg-red-200 transition"
+                    onClick={() => openEventDetailModal(event)} // Passa o evento para abrir os detalhes
+                  >
+                    <p className="text-red-600 font-bold text-lg">{event.title}</p>
+                    <p className="text-gray-700 mt-2">
+                      <strong>Data:</strong>{' '}
+                      {new Date(event.dateInitial).toLocaleDateString()} -{' '}
+                      {new Date(event.dateFinal).toLocaleDateString()}
+                    </p>
+                    <p className="text-gray-700 mt-2">
+                      <strong>Horário:</strong>{' '}
+                      {`${new Date(event.dateInitial).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(event.dateFinal).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                    </p>
+                    <p className="text-gray-700 mt-2 flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-red-500 mr-1"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a1 1 0 0 1-.707-.293l-5-5a7 7 0 1 1 9.414 0l-5 5A1 1 0 0 1 10 18zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {event.location || 'Local não informado'}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-700 text-center">Nenhum evento encontrado.</p>
+              )}
+            </div>
+
             {/* Botão Criar Evento no canto inferior direito */}
             <div className="flex justify-end mt-6">
               <button
@@ -250,17 +378,33 @@ const goToPreviousMonth = () => {
       )}
 
       {/* Modal de Informações Específicas do Evento */}
-      {isEventDetailModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      {isEventDetailModalOpen && selectedEvent && (
+        <div className="fixed z-10 inset-0 bg-black bg-opacity-50 flex justify-center items-center modal-z-index">
           <div className="bg-white p-6 rounded-lg shadow-lg w-3/5 h-1/4 max-w-4xl relative">
             <button onClick={closeEventDetailModal} className="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
               &times;
             </button>
-            <h2 className="text-2xl font-bold mb-4">{activity.title}</h2>
-            <p className="text-gray-700"><strong>Data:</strong> {activity.date}</p>
-            <p className="text-gray-700"><strong>Horário:</strong> {activity.time}</p>
-            <p className="text-gray-700"><strong>Local:</strong> {activity.location}</p>
-            <p className="text-gray-700 mt-4">{activity.description}</p>
+            <h2 className="text-2xl font-bold mb-4">{selectedEvent.title}</h2>
+            {/* Exibição da Data com Condicional */}
+            <p className="text-gray-700">
+              <strong>Data:</strong>{' '}
+              {selectedEvent.dateInitial && selectedEvent.dateFinal
+                ? new Date(selectedEvent.dateInitial).toLocaleDateString() ===
+                  new Date(selectedEvent.dateFinal).toLocaleDateString()
+                  ? new Date(selectedEvent.dateInitial).toLocaleDateString() // Única data
+                  : `${new Date(selectedEvent.dateInitial).toLocaleDateString()} - ${new Date(selectedEvent.dateFinal).toLocaleDateString()}` // Intervalo de datas
+                : 'Data não informada'}
+            </p>
+
+            {/* Exibição do Horário com Fallback */}
+            <p className="text-gray-700">
+              <strong>Horário:</strong>{' '}
+              {selectedEvent.dateInitial && selectedEvent.dateFinal
+                ? `${new Date(selectedEvent.dateInitial).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(selectedEvent.dateFinal).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                : 'Horário não informado'}
+            </p>
+            <p className="text-gray-700"><strong>Local:</strong> {selectedEvent.location}</p>
+            <p className="text-gray-700 mt-4">{selectedEvent.description}</p>
           </div>
         </div>
       )}
@@ -277,4 +421,3 @@ const goToPreviousMonth = () => {
 };
 
 export default Calendar;
-

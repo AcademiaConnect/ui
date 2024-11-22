@@ -6,8 +6,6 @@ import { RouterProvider } from "react-router-dom";
 import {getRoutes} from "./Routes";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import SnackBar from "./components/SnackBar/SnackBar";
-
 
 export default function App() {
 
@@ -16,9 +14,7 @@ export default function App() {
 
 	return (
 		<LocalizationProvider dateAdapter={AdapterMoment}>
-			<SnackBar>
-				<RouterProvider router={getRoutes(dispatch, token)}/>
-			</SnackBar>
+			<RouterProvider router={getRoutes(dispatch, token)}/>
 		</LocalizationProvider>
 	);
 }

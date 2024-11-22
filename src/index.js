@@ -8,7 +8,6 @@ import registerServiceWorker from './registerServiceWorker';
 import reducers from "./reducers";
 import ReduxThunk from "redux-thunk";
 
-
 const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
