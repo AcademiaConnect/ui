@@ -203,17 +203,8 @@ const goToPreviousMonth = () => {
               <div>
                 <h2 className="font-bold">Paulinho da Serra</h2>
                 <p>Ciência da computação</p>
-                <p>8º Semestre</p>
-                <p>Aluno</p>
               </div>
             </div>
-            <h3 className="font-bold mb-2">Matérias matriculadas:</h3>
-            <ul className="list-disc list-inside">
-              <li>Ciência de dados e aprendizado de máquina</li>
-              <li>Paradigmas de Linguagem de Programação</li>
-              <li>Inglês Básico</li>
-              <li>Big Data</li>
-            </ul>
           </div>
 
           {/* Atividades do Dia */}

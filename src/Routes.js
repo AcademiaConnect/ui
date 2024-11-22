@@ -7,14 +7,14 @@ import CreateAccount from "./containers/Auth/CreateAccount";
 import Events from "./containers/Events/events";
 
 
-export const getRoutes = (dispatch, token) => {
+export const getRoutes = (token) => {
     let routes = [];
     
     if (token) {
         // Usuário autenticado
         routes = [
             {path: "*", element: <Navigate to="/events" />},
-            {path: "events", element: <Events />, loader: () => checkAuthLoader(dispatch) }
+            {path: "events", element: <Events />, loader: () => checkAuthLoader() }
 
         ];
     } else {
