@@ -23,11 +23,7 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        docker build \
-          --build-arg REACT_APP_KEY_CRYPTOGRAPHY=${{ secrets.REACT_APP_KEY_CRYPTOGRAPHY }} \
-          --build-arg REACT_APP_IV_CRYPTOGRAPHY=${{ secrets.REACT_APP_IV_CRYPTOGRAPHY }} \
-          --build-arg REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }} \
-          -t leolsalvador1/academiaconnect:latest .
+        docker build -t leolsalvador1/academiaconnect:latest .
         docker push leolsalvador1/academiaconnect:latest
 
     - name: Deploy to DigitalOcean Droplet
