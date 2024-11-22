@@ -2,6 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL
+console.log('API_BASE_URL:', process.env.REACT_APP_API_BASE_URL);
 
 const instance = axios.create({
 	// eslint-disable-next-line no-undef
