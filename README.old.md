@@ -1,42 +1,60 @@
-# 🌐 UI Project
+# 🌐 UI Project  
 
-Bem-vindo ao repositório **UI**! Este é um projeto privado que contém funcionalidades essenciais de autenticação, eventos e gestão de usuários.
+Bem-vindo ao repositório **UI**! Este é um projeto privado que contém funcionalidades essenciais para autenticação, gerenciamento de eventos e usuários. O projeto foi desenvolvido utilizando **React** (JavaScript, CSS e HTML), com suporte da biblioteca **Material UI** para componentes estilizados e **npm** como gerenciador de pacotes.  
 
-## 🚀 Funcionalidades
+---
 
-- **Login e Autenticação de Usuário**  
-  Permite que usuários façam login seguro e gerenciem suas sessões.
+## 🚀 Funcionalidades  
 
-- **Edição de usuários**  
-  Funcionalidade de editar informações de perfil.
+- **Login e Autenticação**: Login seguro com gerenciamento de sessões.  
+- **Edição de Usuários**: Atualização de informações do perfil.  
+- **Gestão de Eventos**: Criação, edição e visualização de eventos.  
 
-- **Criação e visualização de Eventos**  
-  Gerenciamento de eventos de forma intuitica e direcionada.
+---
 
-## ⚙️ Instalação
+## 🛠️ Tecnologias Utilizadas  
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/username/ui.git
-   ```
-   
-2. Acesse o diretório do projeto:
-   ```bash
-   cd ui
-   ```
+- **React**: Biblioteca para construção de interfaces dinâmicas.  
+- **Material UI**: Biblioteca de componentes prontos e estilizados para React.  
+- **JavaScript, CSS e HTML**: Base para desenvolvimento web.  
+- **npm**: Gerenciador de pacotes para instalação e execução do projeto.  
 
-3. Instale as dependências:
-   ```bash
-   npm install
-   ```
+---
 
-5. Inicie o front:
-   ```bash
-   npm start
-   ```
+## ⚙️ Instalação  
 
-> **Nota:** Este projeto é privado e todas as informações nele contidas são confidenciais.
+### Pré-requisitos  
+- **Node.js** (versão 14 ou superior)  
+- Gerenciador de pacotes **npm**  
 
-```
+### Passo a passo  
 
-Esse README fornece uma visão geral clara e organizada do projeto, incluindo instruções de instalação e descrição dos módulos principais. Se precisar de ajustes, estou à disposição!
+1. **Clone o repositório**  
+   ```bash  
+   git clone https://github.com/username/ui.git  
+   ```  
+
+2. **Acesse o diretório do projeto**  
+   ```bash  
+   cd ui  
+   ```  
+
+3. **Instale as dependências**  
+   ```bash  
+   npm install  
+   ```  
+
+4. **Configure o ambiente (opcional)**  
+   Ajuste o arquivo `.env` conforme necessário para suas variáveis de ambiente.  
+
+5. **Inicie o projeto**  
+   ```bash  
+   npm start  
+   ```  
+
+6. **Acesse no navegador**  
+   Abra (http://159.65.248.88/) para visualizar a aplicação.  
+
+---
+
+
