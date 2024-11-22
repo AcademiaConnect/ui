@@ -23,7 +23,7 @@ const AIGenerateModal = ({ isOpen, onClose, onGenerate }) => {
           <p className="p-2 bg-gray-100 border border-gray-300 rounded-md text-sm">
             Para obter o máximo de resultado, recomendamos utilizar um texto padrão, por exemplo:
             <br />
-            <i>Irei fazer um evento no dia 20/09/2020, da 19h até 18h. Será um evento sobre Python. Gere um título e uma descrição sobre Python.</i>
+            <i>Irei fazer um evento no dia 22/11/2024, da 19h até 18h. Será um evento sobre Python. Gere um título e uma descrição sobre Python. A localização será na UDF.</i>
           </p>
         </div>
 

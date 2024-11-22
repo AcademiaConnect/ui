@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { updateEvent } from '../../axios'; // Importe a função da API para atualizar eventos
 
 const EditEventModal = ({ isOpen, onClose, eventToEdit }) => {
+  const [id, setId] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -13,6 +14,7 @@ const EditEventModal = ({ isOpen, onClose, eventToEdit }) => {
   // Pré-preencher os campos com os dados do evento ao abrir a modal
   useEffect(() => {
     if (eventToEdit) {
+      setId(eventToEdit.id || ''); // Define o ID do evento
       setTitle(eventToEdit.title || '');
       setDescription(eventToEdit.description || '');
       setStartDate(eventToEdit.dateInitial?.split('T')[0] || '');
@@ -26,6 +28,7 @@ const EditEventModal = ({ isOpen, onClose, eventToEdit }) => {
   // Função para salvar as alterações
   const handleSave = async () => {
     const updatedEvent = {
+      id,
       title,
       description,
       dateInitial: `${startDate}T${startTime}:00Z`,
